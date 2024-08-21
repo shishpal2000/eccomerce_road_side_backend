@@ -1,25 +1,40 @@
 import mongoose from "mongoose";
-const { Schema, Document } = mongoose;
-const schema = new Schema({
+const { Schema } = mongoose;
+const productSchema = new Schema({
     name: {
         type: String,
-        required: [true, "please provide name"],
+        required: [true, "Please provide a name"],
+        trim: true,
     },
-    photo: {
-        type: String,
-        required: [true, "please provide photo"],
+    photos: {
+        type: [String],
+        required: [true, "Please provide at least one photo"],
+        validate: {
+            validator: function (v) {
+                return Array.isArray(v) && v.length > 0;
+            },
+            message: "A product must have at least one photo",
+        },
     },
     price: {
-        type: String,
-        required: [true, "please provide price"],
+        type: Number,
+        required: [true, "Please provide a price"],
+        min: [0, "Price cannot be negative"],
     },
     stock: {
         type: Number,
-        required: [true, "please provide stock"],
+        required: [true, "Please provide the stock quantity"],
+        min: [0, "Stock cannot be negative"],
+        validate: {
+            validator: Number.isInteger,
+            message: "Stock must be an integer",
+        },
     },
     category: {
         type: String,
-        required: [true, "please provide category"],
+        required: [true, "Please provide a category"],
+        trim: true,
+        lowercase: true,
     },
 }, { timestamps: true });
-export const Product = mongoose.model("Product", schema);
+export const Product = mongoose.model("Product", productSchema);

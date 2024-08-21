@@ -5,10 +5,14 @@ import cors from "cors";
 import { errorMiddleWare } from "./middlewares/error.js";
 import userRoutes from "./routes/user.js";
 import productRoutes from "./routes/products.js";
+import NodeCache from "node-cache"
+
 
 dotenv.config();
 
-const PORT = 5000;
+export const myCache = new NodeCache();
+
+const PORT =process.env.PORT || 8000;
 
 connectDB();
 
@@ -27,6 +31,7 @@ app.use("/api/v1/user", userRoutes);
 
 app.use("/api/v1/product", productRoutes);
 
+app.use("/uploads", express.static("uploads"));
 app.use(errorMiddleWare);
 
 app.listen(PORT, () => console.log(`server is running on port ${PORT}`));
