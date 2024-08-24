@@ -6,77 +6,9 @@ import { tryCatch } from "../middlewares/error.js";
 import fs from "fs";
 import path from "path";
 import { myCache } from "../app.js";
+import { invalidateCache } from "../utils/features.js";
 // import {faker} from '@faker-js/faker';
 
-export const createProduct = tryCatch(
-  async (
-    req: Request<{}, {}, NewProductRequestBody>,
-    res: Response,
-    next: NextFunction
-  ) => {
-    const { name, price, stock, category } = req.body;
-    const photos = req.files as Express.Multer.File[];
-
-    // Check if photos and other fields are provided
-    if (!photos || photos.length === 0) {
-      return next(new ErrorHandler("At least one photo is required", 400));
-    }
-
-    // Check if all required fields are provided
-    if (!name || !price || !stock || !category) {
-      photos.forEach((photo) => {
-        const filePath = path.resolve(photo.path);
-        fs.unlink(filePath, (err) => {
-          if (err) {
-            console.error(`Failed to delete file: ${filePath}`, err);
-          }
-        });
-      });
-      return next(new ErrorHandler("All fields are required", 400));
-    }
-
-    // Map over the photos array to extract the paths
-    const photoPaths = photos.map((photo) => photo.path);
-
-    // Create the product with the provided details and photo paths
-    const product = await Product.create({
-      name,
-      price,
-      photos: photoPaths, // Corrected field name to 'photos'
-      stock,
-      category: category.toLowerCase(), // Normalize category to lowercase
-    });
-
-    return res.status(201).send({
-      success: true,
-      message: "Product created successfully",
-      data: {
-        product,
-      },
-    });
-  }
-);
-
-//revalidation create, update, new order and delete
-export const getLatestProducts = tryCatch(async (req, res, next) => {
-
-  let products=[];
-
-  if(myCache.has("products")){
-    products = JSON.parse(myCache.get("products") as string)
-  }else{
-    products = await Product.find().sort({ createdAt: -1 }).limit(10);
-    myCache.set("products", JSON.stringify(products));
-  }
-
-  return res.status(200).send({
-    success: true,
-    message: "Latest products fetched successfully",
-    data: {
-      products,
-    },
-  });
-});
 
 //revalidation create, update, new order and delete
 export const getAllCategory = tryCatch(async (req, res, next) => {
@@ -215,6 +147,78 @@ export const getSingleProduct = tryCatch(async (req, res, next) => {
     message: "Product fetched successfully",
     data: {
       product,
+    },
+  });
+});
+
+export const createProduct = tryCatch(
+  async (
+    req: Request<{}, {}, NewProductRequestBody>,
+    res: Response,
+    next: NextFunction
+  ) => {
+    const { name, price, stock, category } = req.body;
+    const photos = req.files as Express.Multer.File[];
+
+    // Check if photos and other fields are provided
+    if (!photos || photos.length === 0) {
+      return next(new ErrorHandler("At least one photo is required", 400));
+    }
+
+    // Check if all required fields are provided
+    if (!name || !price || !stock || !category) {
+      photos.forEach((photo) => {
+        const filePath = path.resolve(photo.path);
+        fs.unlink(filePath, (err) => {
+          if (err) {
+            console.error(`Failed to delete file: ${filePath}`, err);
+          }
+        });
+      });
+      return next(new ErrorHandler("All fields are required", 400));
+    }
+
+    // Map over the photos array to extract the paths
+    const photoPaths = photos.map((photo) => photo.path);
+
+    // Create the product with the provided details and photo paths
+    const product = await Product.create({
+      name,
+      price,
+      photos: photoPaths, // Corrected field name to 'photos'
+      stock,
+      category: category.toLowerCase(), // Normalize category to lowercase
+    });
+
+    await invalidateCache({product:true});
+
+    return res.status(201).send({
+      success: true,
+      message: "Product created successfully",
+      data: {
+        product,
+      },
+    });
+  }
+);
+
+//revalidation create, update, new order and delete
+export const getLatestProducts = tryCatch(async (req, res, next) => {
+
+  let products=[];
+
+  if(myCache.has("products")){
+    products = JSON.parse(myCache.get("products") as string)
+  }else{
+    products = await Product.find().sort({ createdAt: -1 }).limit(10);
+    myCache.set("products", JSON.stringify(products));
+  }
+
+  return res.status(200).send({
+    success: true,
+    message: "Latest products fetched successfully",
+    data: {
+      products,
     },
   });
 });

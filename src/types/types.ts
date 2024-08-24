@@ -45,3 +45,31 @@ export interface BaseQuery {
   };
   category?: string;
 }
+
+export interface InvalidateCacheProps {
+  product?: boolean;
+  order?: boolean;
+  admin?: boolean;
+}
+
+export interface NewOrderRequestBody {
+  shippingInfo: {
+    address: string;
+    city: string;
+    pinCode: string;
+    country: string;
+  };
+  user: string;
+  subTotal: number;
+  tax: number;
+  total: number;
+
+
+  orderItems: {
+    name: string;
+    price: number;
+
+    quantity: number;
+    productId: string; 
+  }[];
+}

@@ -5,7 +5,9 @@ import cors from "cors";
 import { errorMiddleWare } from "./middlewares/error.js";
 import userRoutes from "./routes/user.js";
 import productRoutes from "./routes/products.js";
+import orderRoutes from "./routes/order.js";
 import NodeCache from "node-cache"
+import morgan from "morgan";
 
 
 dotenv.config();
@@ -21,6 +23,7 @@ const app = express();
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+// app.use(morgan("dev"));
 
 app.get("/", (req, res) => {
   res.send("Api working is /api/v1/");
@@ -30,6 +33,8 @@ app.get("/", (req, res) => {
 app.use("/api/v1/user", userRoutes);
 
 app.use("/api/v1/product", productRoutes);
+
+app.use("/api/v1/order", orderRoutes);
 
 app.use("/uploads", express.static("uploads"));
 app.use(errorMiddleWare);

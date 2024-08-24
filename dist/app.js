@@ -5,6 +5,7 @@ import cors from "cors";
 import { errorMiddleWare } from "./middlewares/error.js";
 import userRoutes from "./routes/user.js";
 import productRoutes from "./routes/products.js";
+import orderRoutes from "./routes/order.js";
 import NodeCache from "node-cache";
 dotenv.config();
 export const myCache = new NodeCache();
@@ -14,12 +15,14 @@ const app = express();
 app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+// app.use(morgan("dev"));
 app.get("/", (req, res) => {
     res.send("Api working is /api/v1/");
 });
 //using routes
 app.use("/api/v1/user", userRoutes);
 app.use("/api/v1/product", productRoutes);
+app.use("/api/v1/order", orderRoutes);
 app.use("/uploads", express.static("uploads"));
 app.use(errorMiddleWare);
 app.listen(PORT, () => console.log(`server is running on port ${PORT}`));
