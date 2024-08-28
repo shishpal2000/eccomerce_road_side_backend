@@ -56,19 +56,24 @@ export interface NewOrderRequestBody {
   shippingInfo: {
     address: string;
     city: string;
+    state: string;
     pinCode: string;
     country: string;
   };
+
+  
   user: string;
   subTotal: number;
   tax: number;
   total: number;
+  shippingCharges: number;
+  discount: number;
 
 
   orderItems: {
     name: string;
     price: number;
-
+    photo: string;
     quantity: number;
     productId: string; 
   }[];

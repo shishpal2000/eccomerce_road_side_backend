@@ -26,10 +26,20 @@ export const invalidateCache =async ({product, order, admin}:InvalidateCacheProp
   }
 
   if(order){
-    myCache.del("orders");
+
+
+    myCache.del("orders"); 
   }
 
   if(admin){
     myCache.del("admin-products");
+  }
+}
+
+export const redusceStock = async (id: string, quantity: number) => {
+  const product = await Product.findById(id);
+  if (product) {
+    product.stock -= quantity;
+    await product.save();
   }
 }

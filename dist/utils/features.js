@@ -24,3 +24,10 @@ export const invalidateCache = async ({ product, order, admin }) => {
         myCache.del("admin-products");
     }
 };
+export const redusceStock = async (id, quantity) => {
+    const product = await Product.findById(id);
+    if (product) {
+        product.stock -= quantity;
+        await product.save();
+    }
+};

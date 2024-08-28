@@ -4,25 +4,28 @@ import mongoose, { Schema, Document } from "mongoose";
 const orderSchema = new Schema(
   {
     shippingInfo: {
-      type: String,
-      required: [true, "Please provide shipping info"],
+      address:{
+        type: String,
+        required: [true, "Please provide address"],
+      },
+      city: {
+        type: String,
+        required: [true, "Please provide city"],
+      },
+      state: {
+        type: String,
+        required: [true, "Please provide state"],
+      },
+      country: {
+        type: String,
+        required: [true, "Please provide country"],
+      },
+      pinCode: {
+        type: String, // Changed from Number to String
+        required: [true, "Please provide pin code"],
+      },
     },
-    city: {
-      type: String,
-      required: [true, "Please provide city"],
-    },
-    state: {
-      type: String,
-      required: [true, "Please provide state"],
-    },
-    country: {
-      type: String,
-      required: [true, "Please provide country"],
-    },
-    pinCode: {
-      type: String, // Changed from Number to String
-      required: [true, "Please provide pin code"],
-    },
+   
     user: {
       type: String,
       ref: "User",
@@ -44,7 +47,7 @@ const orderSchema = new Schema(
       type: String,
       required: true,
     },
-    orderStatus: {
+    status: {
       type: String,
       default: "pending",
       enum: ["pending", "out for delivery", "delivered"],
@@ -55,10 +58,14 @@ const orderSchema = new Schema(
           type: String,
           required: [true, "Please provide product name"],
         },
+        photo:{
+          type: String,
+          required: [true, "Please provide product photo"],
+        },
         price: {
           type: Number,
           required: [true, "Please provide product price"],
-        },
+        }, 
         quantity: {
           type: Number,
           required: [true, "Please provide product quantity"],
@@ -76,6 +83,6 @@ const orderSchema = new Schema(
 );
 
 // Create and export the model
-const OrderModel = mongoose.model("Order", orderSchema);
+const Order = mongoose.model("Order", orderSchema);
 
-export default OrderModel;
+export default Order;
